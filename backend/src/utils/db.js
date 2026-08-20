@@ -1,15 +1,24 @@
 import pkg from "pg";
 import dotenv from "dotenv";
+dotenv.config();
+
 const { Pool } = pkg;
 
-dotenv.config();
-export const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
+const connectionString = process.env.DB_URL;
+export const pool = new Pool(
+  connectionString
+    ? {
+        connectionString,
+        ssl: { rejectUnauthorized: false },
+      }
+    : {
+        user: process.env.DB_USER,
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASSWORD,
+        port: process.env.DB_PORT,
+      },
+);
 
 const connectDB = async () => {
   try {
